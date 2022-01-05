@@ -35,9 +35,8 @@ class QADataset_Train(QADataset):
                 for word in sent:
                     word_count[word] += 1
         for word, count in word_count.items():
-            if count > 100 and  word not in self.word_to_ix:  # word has not been assigned an index yet
+            if word not in self.word_to_ix:  # word has not been assigned an index yet
                 self.word_to_ix[word] = len(self.word_to_ix)
-
 
     def __getitem__(self, index):
         s1 = self.to_tensor(self.X[index][0])

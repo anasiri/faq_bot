@@ -1,6 +1,8 @@
 import os
 import pickle
-
+from tqdm import tqdm
+from sklearn.metrics import classification_report
+import numpy as np
 import torch
 
 
@@ -30,3 +32,18 @@ def load_vocab(file_path):
     with open(file_path, 'rb') as f:
         vocab = pickle.load(f)
     return vocab
+
+
+def report_validation_scores(valid_dataloader, model):
+    labels = []
+    preds = []
+    for data in tqdm(valid_dataloader):
+        s1 = data['s1']
+        s2 = data['s2']
+        label = data['label']
+        predication = model(s1, s2)
+        labels.append(label.detach().numpy())
+        predication = (predication > 0.5).type(torch.float)
+        preds.append(predication.detach().numpy())
+    print(classification_report(np.concatenate(labels, 0), np.concatenate(preds, 0),
+                                target_names=["no duplicate", "duplicate"]))
