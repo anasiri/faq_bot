@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if torch.cuda.is_available():
         loss_weights = loss_weights.cuda()
     # criterion = torch.nn.CrossEntropyLoss(loss_weights)
-    for epoch in range(opt.epochs):
+    for epoch in range(1,opt.epochs+1):
         labels = []
         preds = []
         for step, data in enumerate(dataloader, 0):
