@@ -4,15 +4,17 @@ from hazm import word_tokenize, Normalizer
 
 
 class QADataset(Dataset):
-    def __init__(self, max_no_tokens, START_TAG="<START>", STOP_TAG="<STOP>", PAD_TAG="<PAD>"):
+    def __init__(self, max_no_tokens, START_TAG="<START>", STOP_TAG="<STOP>", PAD_TAG="<PAD>",OOV_TAG="<OOV>"):
         self.START_TAG = START_TAG
         self.STOP_TAG = STOP_TAG
         self.PAD_TAG = PAD_TAG
+        self.OOV_TAG = OOV_TAG
+
         self.max_no_tokens = max_no_tokens
         self.normalizer = Normalizer()
         self.X = []
         self.y = []
-        self.word_to_ix = {PAD_TAG: 0, START_TAG: 1, STOP_TAG: 2}
+        self.word_to_ix = {PAD_TAG: 0, OOV_TAG:1, START_TAG: 2, STOP_TAG: 3}
 
     def preprocess(self, x):
         out = self.normalizer.normalize(x)
@@ -27,12 +29,11 @@ class QADataset(Dataset):
         new_sentence = new_sentence + [self.PAD_TAG] * max(self.max_no_tokens - len(new_sentence), 0)
         return new_sentence
 
-
     def get_vocab_len(self):
         return len(self.word_to_ix)
 
-    def to_tensor(self, seq, to_ix):
-        idxs = [to_ix[w] for w in seq]
+    def to_tensor(self, seq):
+        idxs = [self.word_to_ix[w] if w in self.word_to_ix else self.word_to_ix[self.OOV_TAG] for w in seq ]
         return torch.tensor(idxs, dtype=torch.long)
 
     def __len__(self):

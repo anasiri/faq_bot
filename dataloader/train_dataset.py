@@ -1,13 +1,13 @@
 import math
 import torch
 import pandas as pd
-from hazm import word_tokenize, Normalizer
+from collections import defaultdict
 from dataloader.base_dataset import QADataset
 
 
 class QADataset_Train(QADataset):
-    def __init__(self, opt, dataset_path, START_TAG="<START>", STOP_TAG="<STOP>", PAD_TAG="<PAD>"):
-        super().__init__(opt.max_no_tokens, START_TAG, STOP_TAG, PAD_TAG)
+    def __init__(self, opt, dataset_path, START_TAG="<START>", STOP_TAG="<STOP>", PAD_TAG="<PAD>", OOV_TAG="<OOV>"):
+        super().__init__(opt.max_no_tokens, START_TAG, STOP_TAG, PAD_TAG, OOV_TAG)
 
         df = pd.read_csv(dataset_path)
         positive_data = df[df['is_duplicate'] == 1].iloc[:math.floor(opt.training_size / 2)]
@@ -27,15 +27,20 @@ class QADataset_Train(QADataset):
             sent2 = self.pad_sentence(sent2)
 
             self.X.append((sent1, sent2))
-        self.word_to_ix = {PAD_TAG: 0, START_TAG: 1, STOP_TAG: 2}
+
         # For each words-list (sentence) and tags-list in each tuple of training_data
+        word_count = defaultdict(int)
         for sentences in self.X:
             for sent in sentences:
                 for word in sent:
-                    if word not in self.word_to_ix:  # word has not been assigned an index yet
-                        self.word_to_ix[word] = len(self.word_to_ix)
+                    word_count[word] += 1
+        for word, count in word_count.items():
+            if count > 100 and  word not in self.word_to_ix:  # word has not been assigned an index yet
+                self.word_to_ix[word] = len(self.word_to_ix)
+
+
     def __getitem__(self, index):
-        s1 = self.to_tensor(self.X[index][0], self.word_to_ix)
-        s2 = self.to_tensor(self.X[index][1], self.word_to_ix)
+        s1 = self.to_tensor(self.X[index][0])
+        s2 = self.to_tensor(self.X[index][1])
         label = torch.tensor(self.y.iloc[index], dtype=torch.float).unsqueeze(0)
         return {"s1": s1, "s2": s2, "label": label}
