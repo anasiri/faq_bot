@@ -19,7 +19,7 @@ if __name__ == '__main__':
     model = SiameseNet(opt, dataset.get_vocab_len())
 
     learning_rate = opt.lr_rate
-    optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, model.parameters()), lr=learning_rate)
+    optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, model.parameters()), lr=learning_rate,weight_decay=0.01)
 
     criterion = torch.nn.BCELoss()  # ContrastiveLoss()
 
@@ -60,6 +60,6 @@ if __name__ == '__main__':
                     f" recall: {recall:.3f} f1-score: {f1:.3f} loss:{loss:.3f}")
         print(f"Finished epoch {epoch}/{opt.epochs}")
         print(f"Testing on validation set...")
-        report_validation_scores(valid_dataloader,model)
+        report_validation_scores(valid_dataloader,model.eval())
     save_checkpoint(model, 'checkpoints/final_model.pth')
     save_vocab(dataset.word_to_ix, 'checkpoints/vocab.pickle')

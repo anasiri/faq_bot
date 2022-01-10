@@ -12,10 +12,10 @@ class SiameseNet(nn.Module):
         self.lstm = nn.LSTM(opt.embedding_dim, opt.hidden_dim)
 
         self.classifier = nn.Sequential(nn.Linear(self.hidden_dim * 5 * self.max_no_tokens, self.hidden_dim * 3),
-                                        nn.Dropout(0.3),
+                                        nn.Dropout(0.8),
                                         nn.BatchNorm1d( self.hidden_dim * 3),
                                         nn.Linear(self.hidden_dim * 3, self.hidden_dim),
-                                        nn.Dropout(0.3),
+                                        nn.Dropout(0.8),
                                         nn.BatchNorm1d( self.hidden_dim),
                                         nn.Linear(self.hidden_dim, target_size),
                                         nn.Sigmoid())
