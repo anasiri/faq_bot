@@ -2,19 +2,17 @@ import torch
 from torch.utils.data import Dataset
 from hazm import word_tokenize, Normalizer
 
-
 class QADataset(Dataset):
-    def __init__(self, max_no_tokens, START_TAG="<START>", STOP_TAG="<STOP>", PAD_TAG="<PAD>",OOV_TAG="<OOV>"):
+    def __init__(self, max_no_tokens, START_TAG="<START>", STOP_TAG="<STOP>", PAD_TAG="<PAD>", OOV_TAG="<OOV>"):
         self.START_TAG = START_TAG
         self.STOP_TAG = STOP_TAG
         self.PAD_TAG = PAD_TAG
         self.OOV_TAG = OOV_TAG
-
         self.max_no_tokens = max_no_tokens
         self.normalizer = Normalizer()
         self.X = []
         self.y = []
-        self.word_to_ix = {PAD_TAG: 0, OOV_TAG:1, START_TAG: 2, STOP_TAG: 3}
+        self.word_to_ix = {PAD_TAG: 0, OOV_TAG: 1, START_TAG: 2, STOP_TAG: 3}
 
     def preprocess(self, x):
         out = self.normalizer.normalize(x)

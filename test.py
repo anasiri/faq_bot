@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from dataloader.test_dataset import QADataset_Test
-from networks import SiameseNet
+from networks import Base_Net
 from options import get_opts
 import numpy as np
 from sklearn.metrics import classification_report
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     dataset = QADataset_Test(opt, 'dataset/dataset.csv', vocab)
     dataloader = DataLoader(dataset, batch_size=opt.batch_size, shuffle=True, num_workers=0)
 
-    model = SiameseNet(opt, dataset.get_vocab_len())
+    model = Base_Net(opt, dataset.get_vocab_len())
     load_checkpoint(model, 'checkpoints/final_model.pth')
     labels = []
     preds = []
