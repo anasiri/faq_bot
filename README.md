@@ -1,1 +1,1 @@
-# persian_duplicate_question
+# Frequently Asked Questions Bot
